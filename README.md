@@ -16,13 +16,13 @@ Editar
  └── index.js        # Ponto de entrada React
  └── App.css         # Estilo do jogo
 /public/img/
- └── helmet.png
- └── potion.png
- └── ring.png
- └── scroll.png
- └── shield.png
- └── sword.png
- └── cover.png       # costas da carta
+ └── exemplo.png
+ └── exemplo.png
+ └── exemplo.png
+ └── exemplo.png
+ └── exemplo.png
+ └── exemplo.png
+ └── exemplo.png       # costas da carta
 
  1️⃣ Projeto criado com Vite:
 

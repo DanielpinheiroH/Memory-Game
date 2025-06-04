@@ -97,3 +97,79 @@ Modo multiplayer
 Projeto criado para fins de aprendizado de React + Hooks.
 Você pode usar e modificar como quiser. 🚀
 
+UPDATE:
+🔊 1️⃣ Sons de clique e acerto
+🎵 Passo 1: Adicione os arquivos de som
+1️⃣ Crie a pasta: /public/sounds/
+2️⃣ Coloque os arquivos de som (exemplo):
+
+arduino
+Copiar
+Editar
+/public/sounds/click.mp3
+/public/sounds/match.mp3
+/public/sounds/nomatch.mp3
+/public/sounds/win.mp3
+Você pode pegar sons em sites como:
+
+https://freesound.org
+
+https://mixkit.co/free-sound-effects/
+
+🎵 Passo 2: Crie a função para tocar som
+No seu App.jsx, crie uma função para tocar som:
+
+js
+Copiar
+Editar
+const playSound = (soundFile) => {
+  const audio = new Audio(soundFile);
+  audio.play();
+};
+🎵 Passo 3: Adicione nos eventos
+Quando clicar em uma carta:
+No componente SingleCard (ou no handleChoice):
+
+js
+Copiar
+Editar
+const handleChoice = (card) => {
+  playSound('/sounds/click.mp3');
+  choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+};
+Quando acertar um par:
+Dentro do useEffect que verifica os dois cards:
+
+js
+Copiar
+Editar
+if (choiceOne.src === choiceTwo.src) {
+  playSound('/sounds/match.mp3');
+  // lógica de marcar como matched
+}
+Quando errar um par (antes do setTimeout):
+js
+Copiar
+Editar
+else {
+  playSound('/sounds/nomatch.mp3');
+  setTimeout(() => resetTurn(), 1000);
+}
+Quando vencer o jogo:
+No useEffect que checa se terminou (pode criar esse):
+
+js
+Copiar
+Editar
+useEffect(() => {
+  if (cards.length > 0 && cards.every(card => card.matched)) {
+    playSound('/sounds/win.mp3');
+  }
+}, [cards]);
+✅ Resumo
+Agora temos:
+
+✅ Som ao clicar na carta
+✅ Som quando acerta um par
+✅ Som quando erra um par
+✅ Som quando vence o jogo

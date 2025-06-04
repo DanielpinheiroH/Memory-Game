@@ -1,0 +1,190 @@
+
+
+
+*BASH*
+/src
+ └── App.jsx
+ └── index.js
+ └── App.css
+*JSX*
+  import React, { useState, useEffect } from 'react';
+import './App.css';
+
+const cardImages = [
+  { src: '/img/sddefault.jpg', matched: false },
+  { src: '/img/image2.jpg', matched: false },
+  { src: '/img/image3.jpg', matched: false },
+  { src: '/img/image4.jpg', matched: false },
+  { src: '/img/image5.jpg', matched: false },
+  { src: '/img/image6.jpg', matched: false },
+];
+
+const App = () => {
+  const [cards, setCards] = useState([]);
+  const [turns, setTurns] = useState(0);
+  const [choiceOne, setChoiceOne] = useState(null);
+  const [choiceTwo, setChoiceTwo] = useState(null);
+  const [disabled, setDisabled] = useState(false);
+
+  // Shuffle the cards
+  const shuffleCards = () => {
+    const shuffledCards = [...cardImages, ...cardImages]
+      .sort(() => Math.random() - 0.5)
+      .map((card) => ({ ...card, id: Math.random() }));
+
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setCards(shuffledCards);
+    setTurns(0);
+  };
+
+  // Handle a choice
+  const handleChoice = (card) => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+  };
+
+  // Compare 2 selected cards
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      setDisabled(true);
+
+      if (choiceOne.src === choiceTwo.src) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.src === choiceOne.src) {
+              return { ...card, matched: true };
+            } else {
+              return card;
+            }
+          });
+        });
+        resetTurn();
+      } else {
+        setTimeout(() => resetTurn(), 1000);
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+
+  // Reset choices & increase turn
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns((prevTurns) => prevTurns + 1);
+    setDisabled(false);
+  };
+
+  // Start new game automatically
+  useEffect(() => {
+    shuffleCards();
+  }, []);
+
+  return (
+    <div className="App">
+      <h1>🧠 Jogo da Memória</h1>
+      <button onClick={shuffleCards}>🔄 Novo Jogo</button>
+
+      <div className="card-grid">
+        {cards.map((card) => (
+          <SingleCard
+            key={card.id}
+            card={card}
+            handleChoice={handleChoice}
+            flipped={card === choiceOne || card === choiceTwo || card.matched}
+            disabled={disabled}
+          />
+        ))}
+      </div>
+
+      <p>Turnos: {turns}</p>
+    </div>
+  );
+};
+
+const SingleCard = ({ card, handleChoice, flipped, disabled }) => {
+  const handleClick = () => {
+    if (!disabled) {
+      handleChoice(card);
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className={flipped ? 'flipped' : ''}>
+        <img className="front" src={card.src} alt="card front" />
+        <img
+          className="back"
+          src="/img/cover.png"
+          onClick={handleClick}
+          alt="card back"
+        />
+      </div>
+    </div>
+  );
+};
+export default App;
+
+  *css*
+.App {
+  text-align: center;
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 20px;
+  cursor: pointer;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.card {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.card .flipped .front {
+  transform: rotateY(0deg);
+}
+
+.card .flipped .back {
+  transform: rotateY(180deg);
+}
+
+.card > div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+
+.front {
+  transform: rotateY(0deg);
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
